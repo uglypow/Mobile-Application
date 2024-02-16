@@ -132,17 +132,17 @@ class _ledMatrixState extends State<ledMatrix> {
   ];
   String _displayNum = "00";
 
+  // Methods
+
   Widget _buildDot(int display) {
     Color displayColor = display == 0 ? Color(0xFF333232) : Color(0xFFb2fe58);
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Container(
-        width: 20.0,
-        height: 20.0,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: displayColor,
-        ),
+    return Container(
+      width: 20.0,
+      height: 20.0,
+      margin: EdgeInsets.all(2.0),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: displayColor,
       ),
     );
   }
@@ -178,6 +178,56 @@ class _ledMatrixState extends State<ledMatrix> {
     );
   }
 
+  Widget _buildButton(VoidCallback onTap, IconData icon) {
+    return InkWell(
+      customBorder: new CircleBorder(),
+      onTap: () {
+        onTap();
+      },
+      child: Ink(
+        width: 100.0,
+        height: 100.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: Color(0xFF250059),
+          size: 80.0,
+        ),
+      ),
+    );
+  }
+
+  void plus() {
+    setState(
+      () {
+        int currentValue = int.parse(_displayNum);
+        currentValue = (currentValue + 1) %
+            100; // Increment and ensure it stays within the range 0-99
+        _displayNum = currentValue
+            .toString()
+            .padLeft(2, '0'); // Convert back to a 2-digit string
+      },
+    );
+  }
+
+  void minus() {
+    setState(
+      () {
+        int currentValue = int.parse(_displayNum);
+        currentValue = (currentValue - 1 + 100) %
+            100; // Decrement and ensure it stays within the range 0-99
+        _displayNum = currentValue
+            .toString()
+            .padLeft(2, '0'); // Convert back to a 2-digit string
+      },
+    );
+  }
+
+  // End of methods
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,32 +245,9 @@ class _ledMatrixState extends State<ledMatrix> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            InkWell(
-              customBorder: new CircleBorder(),
-              onTap: () {
-                setState(() {
-                  int currentValue = int.parse(_displayNum);
-                  currentValue = (currentValue + 1) %
-                      100; // Increment and ensure it stays within the range 0-99
-                  _displayNum = currentValue
-                      .toString()
-                      .padLeft(2, '0'); // Convert back to a 2-digit string
-                });
-              },
-              child: Ink(
-                width: 100.0,
-                height: 100.0,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.arrow_drop_up,
-                  color: Color(0xFF250059),
-                  size: 80.0,
-                ),
-              ),
-            ),
+            _buildButton(plus, Icons.arrow_drop_up),
+
+            // Container displaying LED matrix
             Container(
               width: 350.0,
               height: 300.0,
@@ -240,32 +267,8 @@ class _ledMatrixState extends State<ledMatrix> {
               ),
               child: _buildDisplay(_displayNum),
             ),
-            InkWell(
-              customBorder: new CircleBorder(),
-              onTap: () {
-                setState(() {
-                  int currentValue = int.parse(_displayNum);
-                  currentValue = (currentValue - 1 + 100) %
-                      100; // Decrement and ensure it stays within the range 0-99
-                  _displayNum = currentValue
-                      .toString()
-                      .padLeft(2, '0'); // Convert back to a 2-digit string
-                });
-              },
-              child: Ink(
-                width: 100.0,
-                height: 100.0,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.arrow_drop_down,
-                  color: Color(0xFF250059),
-                  size: 80.0,
-                ),
-              ),
-            ),
+
+            _buildButton(minus, Icons.arrow_drop_down),
           ],
         ),
       ),
